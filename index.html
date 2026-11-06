@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explore beaches, temples, and countries with Wayfarer.">
+<title>Wayfarer | Travel recommendations</title>
+<style>:root{font:17px/1.55 system-ui,sans-serif;color:#162b28;background:#fbf8ef}*{box-sizing:border-box}body{margin:0}a{color:inherit}.topbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding:1rem clamp(1rem,4vw,4rem);background:#103c36;color:#fff}.brand{font:700 1.5rem Georgia,serif;text-decoration:none}.topbar nav,.topbar form,.categories{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem 1rem}.topbar nav a{font-size:.9rem;text-underline-offset:.3em}.topbar nav a:not([aria-current]){text-decoration:none}input,button,textarea{font:inherit;border-radius:.45rem;padding:.55rem .75rem;border:1px solid #879b92}button{cursor:pointer;background:#e8bb78;border-color:#e8bb78;color:#182d29;font-weight:700}button:hover{background:#f5cf96}#clear-search{background:transparent;color:white}.hero{padding:clamp(2.5rem,7vw,5rem) clamp(1rem,8vw,8rem);background:linear-gradient(115deg,#123f37,#265d52);color:#fff}.hero h1,.page h1{font:700 clamp(2.8rem,7vw,5.8rem)/1 Georgia,serif;margin:.25em 0}.hero>p:last-child{max-width:38rem}.eyebrow{font-size:.78rem;font-weight:750;letter-spacing:.16em}.hero .eyebrow{color:#f1ca90}.results,.page{width:min(1050px,calc(100% - 2rem));margin:2rem auto 4rem}.page{max-width:720px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr));gap:1.25rem}.card{overflow:hidden;border:1px solid #d4dbd0;border-radius:.8rem;background:#fff}.card img{width:100%;aspect-ratio:2/1;object-fit:cover;display:block}.card div{padding:1rem}.card h3{margin:.1rem 0;font:700 1.5rem Georgia,serif}.card p{margin:.4rem 0}.card .label{font-size:.8rem;color:#365d52}.contact{display:grid;gap:1rem;max-width:32rem}.contact label{display:grid;gap:.35rem}.contact button{justify-self:start}dt{font-weight:750}dd{margin:0 0 1rem}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}:focus-visible{outline:3px solid #c67b26;outline-offset:3px}
+
+[hidden]{display:none!important}
+</style>
+
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">✦ Wayfarer</a>
+  <nav aria-label="Main navigation">
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact Us</a>
+    <form id="search-form" role="search">
+      <label class="sr-only" for="destination">Search destinations</label>
+      <input type="search" id="destination" placeholder="Beach, temple, country…" required>
+      <button type="submit">Search</button>
+      <button type="button" id="clear-search">Clear</button>
+    </form>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <p class="eyebrow">THE TRAVEL DISCOVERY GUIDE</p>
+    <h1>Where to next?</h1>
+    <p>Find a place worth the trip. Explore illustrated recommendations for quiet beaches, historic temples, and countries to discover.</p>
+  </section>
+  <section class="results" aria-labelledby="result-heading">
+    <h2 id="result-heading">Explore by interest</h2>
+    <p id="status" role="status">Search above, or start with a category.</p>
+    <div id="categories" class="categories">
+      <button type="button" data-query="beach">Beaches</button>
+      <button type="button" data-query="temple">Temples</button>
+      <button type="button" data-query="country">Countries</button>
+    </div>
+    <div id="cards" class="cards"></div>
+  </section>
+</main>
+<script>
+const illustrations = {"angkor":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23edbc88%22%2F%3E%3Cpath%20fill%3D%22%23466c57%22%20d%3D%22M0%20270Q190%20200%20375%20285Q590%20210%20800%20270v130H0z%22%2F%3E%3Cpath%20fill%3D%22%23514838%22%20d%3D%22M120%20320v-68h72v-56h25l35-70%2035%2070h24v44h29v-85h25l37-100%2037%20100h25v85h29v-44h24l35-70%2035%2070h25v56h68v68z%22%2F%3E%3Cpath%20fill%3D%22%23b29c73%22%20d%3D%22M385%20320v-62h34v62z%22%2F%3E%3C%2Fsvg%3E%0A","anse":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%239cdbd8%22%2F%3E%3Cpath%20fill%3D%22%2343a6a9%22%20d%3D%22M0%20170h800v230H0z%22%2F%3E%3Cpath%20fill%3D%22%23f4d5a4%22%20d%3D%22M0%20300Q350%20200%20800%20295v105H0z%22%2F%3E%3Cpath%20fill%3D%22%23747f79%22%20d%3D%22M40%20325Q35%20150%20170%20160Q250%20180%20255%20305ZM530%20300Q510%20150%20625%20130Q740%20110%20790%20315Z%22%2F%3E%3C%2Fsvg%3E%0A","borobudur":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23b5c9b8%22%2F%3E%3Cpath%20fill%3D%22%2362806a%22%20d%3D%22M0%20265%20150%20130%20320%20245%20500%20122%20800%20245v155H0z%22%2F%3E%3Cpath%20fill%3D%22%23484c42%22%20d%3D%22M90%20340h620v-38H620v-35h-90v-40h-52q0-62-63-104l-15-38-15%2038q-63%2042-63%20104h-52v40h-90v35H90z%22%2F%3E%3Cpath%20fill%3D%22%23918e74%22%20d%3D%22M95%20340h610v14H95z%22%2F%3E%3C%2Fsvg%3E%0A","japan":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23f6cabd%22%2F%3E%3Ccircle%20cx%3D%22566%22%20cy%3D%22110%22%20r%3D%2257%22%20fill%3D%22%23d66e58%22%2F%3E%3Cpath%20fill%3D%22%23527778%22%20d%3D%22M30%20328%20358%2075%20667%20328Z%22%2F%3E%3Cpath%20fill%3D%22%23fff2df%22%20d%3D%22m358%2075%20104%2085-75-8-28%2024-39-26-63%206z%22%2F%3E%3Cpath%20fill%3D%22%23355858%22%20d%3D%22M0%20312Q300%20278%20800%20325v75H0z%22%2F%3E%3C%2Fsvg%3E%0A","peru":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%239ed0ce%22%2F%3E%3Cpath%20fill%3D%22%23496e67%22%20d%3D%22M0%20300%20205%2080%20355%20245%20520%20105%20800%20295v105H0z%22%2F%3E%3Cpath%20fill%3D%22%23809557%22%20d%3D%22M0%20345%20275%20235%20472%20305%20730%20204%20800%20258v142H0z%22%2F%3E%3Cpath%20fill%3D%22%23e1c694%22%20d%3D%22M100%20344h255v-27h74v-31h107v24H454v32H376v22H100z%22%2F%3E%3C%2Fsvg%3E%0A","whitehaven":"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%2391ddd6%22%2F%3E%3Cpath%20fill%3D%22%231a9b9c%22%20d%3D%22M0%20100Q180%2020%20400%20110T800%20145V400H0Z%22%2F%3E%3Cpath%20fill%3D%22%23fff4cd%22%20d%3D%22M0%20270Q230%2090%20490%20260T800%20225V400H0Z%22%2F%3E%3Cpath%20fill%3D%22%2335684c%22%20d%3D%22M0%20355Q240%20250%20385%20400H0Z%22%2F%3E%3C%2Fsvg%3E%0A"};
+const destinations = [
+  {type:'beach', name:'Whitehaven Beach', place:'Queensland, Australia', image:'whitehaven', description:'A sweep of white silica sand and tidal turquoise channels in the Whitsunday Islands.'},
+  {type:'beach', name:'Anse Source d’Argent', place:'La Digue, Seychelles', image:'anse', description:'Pale sand, shallow water, and rounded granite boulders frame this island beach.'},
+  {type:'temple', name:'Angkor Wat', place:'Siem Reap, Cambodia', image:'angkor', description:'A vast Khmer temple complex known for its sandstone towers and carved galleries.'},
+  {type:'temple', name:'Borobudur', place:'Central Java, Indonesia', image:'borobudur', description:'A Buddhist monument with ascending terraces and bell-shaped stupas.'},
+  {type:'country', name:'Japan', place:'East Asia', image:'japan', description:'Explore historic towns, volcanic landscapes, and the busy neighborhoods of Tokyo.'},
+  {type:'country', name:'Peru', place:'South America', image:'peru', description:'Discover the Andes, historic Cusco, and Peru’s Pacific coast.'}
+];
+const input = document.querySelector('#destination');
+const cards = document.querySelector('#cards');
+const heading = document.querySelector('#result-heading');
+const status = document.querySelector('#status');
+const categories = document.querySelector('#categories');
+const aliases = {beach:'beach', beaches:'beach', temple:'temple', temples:'temple', country:'country', countries:'country'};
+function search(query) {
+  const term = query.trim().toLowerCase();
+  if (!term) return clearSearch();
+  const category = aliases[term];
+  const matches = destinations.filter(item => category ? item.type === category : (item.name + ' ' + item.place).toLowerCase().includes(term));
+  cards.replaceChildren();
+  heading.textContent = 'Recommendations';
+  status.textContent = matches.length ? matches.length + ' results for “' + query.trim() + '”' : 'No results. Try beach, temple, or country.';
+  categories.hidden = true;
+  for (const item of matches) {
+    const article = document.createElement('article');
+    article.className = 'card';
+    const image = document.createElement('img');
+    image.src = illustrations[item.image];
+    image.alt = 'Illustration of ' + item.name;
+    const body = document.createElement('div');
+    const title = document.createElement('h3');
+    title.textContent = item.name;
+    const place = document.createElement('p');
+    place.className = 'label';
+    place.textContent = item.place;
+    const description = document.createElement('p');
+    description.textContent = item.description;
+    body.append(title, place, description);
+    article.append(image, body);
+    cards.append(article);
+  }
+}
+function clearSearch() {
+  input.value = '';
+  cards.replaceChildren();
+  heading.textContent = 'Explore by interest';
+  status.textContent = 'Search above, or start with a category.';
+  categories.hidden = false;
+}
+document.querySelector('#search-form').addEventListener('submit', event => {
+  event.preventDefault();
+  search(input.value);
+});
+document.querySelector('#clear-search').addEventListener('click', () => {
+  clearSearch();
+  input.focus();
+});
+categories.addEventListener('click', event => {
+  const query = event.target.dataset.query;
+  if (query) {
+    input.value = query;
+    search(query);
+  }
+});
+
+</script>
+</body>
+</html>
